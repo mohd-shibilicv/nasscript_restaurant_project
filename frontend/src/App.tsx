@@ -1,13 +1,26 @@
-import './App.css'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import ErrorBoundary from './components/Layout/ErrorBoundary';
+import DashboardPage from './pages/DashboardPage';
+import DishesPage from './pages/DishesPage';
+import OrdersPage from './pages/OrdersPage';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/dishes" element={<DishesPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+          </Routes>
+        </Router>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
 }
 
-export default App
+export default App;
