@@ -74,12 +74,22 @@ export interface Category {
   }
   
   // Component prop types
+  export interface CategoryItemProps {
+    category: Category;
+  }
+  
+  export interface CategoryListProps {
+    category: Category[];
+  }
+
   export interface DishItemProps {
     dish: Dish;
+    onAddDish: (dish: Dish) => void;
   }
   
   export interface DishListProps {
     dishes: Dish[];
+    onAddDish: (dish: Dish) => void;
   }
   
   export interface OrderItemProps {
@@ -91,11 +101,19 @@ export interface Category {
   }
   
   // Hook return types
+  export interface UseCategoriesReturn {
+    dishes: ApiResponse<Category> | undefined;
+    isLoading: boolean;
+    isError: boolean;
+    refetch: () => void;
+  }
+
   export interface UseDishesReturn {
     dishes: ApiResponse<Dish> | undefined;
     isLoading: boolean;
     isError: boolean;
     refetch: () => void;
+    addDishToOrder: (id, quantity) => void;
   }
   
   export interface UseOrdersReturn {

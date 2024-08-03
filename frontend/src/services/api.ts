@@ -8,7 +8,7 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-export const getCategories = () => api.get<ApiResponse<Category>>('/categories').then(response => response.data);
+export const getCategories = () => api.get<ApiResponse<Category>>('/categories').then(response => response.data.results);
 export const getDishes = () => api.get<ApiResponse<Dish>>('/dishes/').then(response => response.data);
 export const getOrders = () => api.get<ApiResponse<Order>>('/orders/').then(response => response.data);
 export const createOrder = (orderData: OrderFormData) => api.post<Order>('/orders/', orderData).then(response => response.data);
