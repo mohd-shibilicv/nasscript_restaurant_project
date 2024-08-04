@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Category(models.Model):
@@ -90,3 +92,19 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.message[:50]}..."
+    
+
+@receiver(post_save, sender=Order)
+def create_notification_for_orders(sender, instance, created, **kwargs):
+    if created:
+        Notification.objects.create(
+            message=f"New order created: Order #{instance.id} with a total amount of ${instance.total_amount}"
+        )
+
+
+@receiver(post_save, sender=Bill)
+def create_notification_for_bills(sender, instance, created, **kwargs):
+    if created:
+        Notification.objects.create(
+            message=f"New bill #{instance.id} generated for Order #{instance.order.id}"
+        )

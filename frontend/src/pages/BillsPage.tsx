@@ -18,7 +18,7 @@ const BillsPage: React.FC = () => {
 
   return (
     <Layout>
-      <h1 className="text-3xl font-semibold mb-6">Generated Bills</h1>
+      <h1 className="text-3xl font-bold mb-6">Generated Bills</h1>
       {bills?.results.length ? (
         <>
           {bills.results.map((bill: Bill) => (

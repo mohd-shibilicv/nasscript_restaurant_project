@@ -4,8 +4,9 @@ from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils import timezone
-from django.db.models import Sum, Count
-from restaurant_app.models import Category, Dish, Order, Notification, Bill
+from django.db.models import Sum, Count, Avg, F
+from django.db.models.functions import TruncDate
+from restaurant_app.models import Category, Dish, Order, OrderItem, Notification, Bill
 from restaurant_app.serializers import (
     CategorySerializer,
     DishSerializer,
@@ -34,35 +35,126 @@ class DishViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['status']
-    ordering_fields = ['created_at', 'total_amount']
+
+    def get_queryset_by_time_range(self, time_range):
+        end_date = timezone.now()
+        if time_range == 'day':
+            start_date = end_date - timedelta(days=1)
+        elif time_range == 'week':
+            start_date = end_date - timedelta(weeks=1)
+        elif time_range == 'month':
+            start_date = end_date - timedelta(days=30)
+        elif time_range == 'year':
+            start_date = end_date - timedelta(days=365)
+        else:
+            start_date = end_date - timedelta(days=30)
+
+        return self.queryset.filter(created_at__range=(start_date, end_date))
 
     @action(detail=False, methods=['get'])
-    def analytics(self, request):
-        end_date = timezone.now()
-        start_date = end_date - timedelta(days=30)
-        
-        daily_sales = Order.objects.filter(
-            created_at__range=(start_date, end_date)
-        ).values('created_at__date').annotate(
+    def dashboard_data(self, request):
+        time_range = request.query_params.get('time_range', 'month')
+        queryset = self.get_queryset_by_time_range(time_range)
+
+        # Calculate daily sales
+        daily_sales = queryset.annotate(
+            date=TruncDate('created_at')
+        ).values('date').annotate(
             total_sales=Sum('total_amount'),
             order_count=Count('id')
-        ).order_by('created_at__date')
+        ).order_by('date')
 
-        total_income = Order.objects.filter(
-            created_at__range=(start_date, end_date)
-        ).aggregate(total_income=Sum('total_amount'))['total_income'] or 0
+        # Calculate total income
+        total_income = queryset.aggregate(total_income=Sum('total_amount'))['total_income'] or 0
 
-        new_customers = Order.objects.filter(
-            created_at__range=(start_date, end_date)
-        ).values('id').distinct().count()
+        # Calculate new customers (assuming each unique order represents a new customer)
+        new_customers = queryset.values('id').distinct().count()
+
+        # Calculate top dishes
+        top_dishes = OrderItem.objects.filter(order__in=queryset).values(
+            'dish__name'
+        ).annotate(
+            orders=Count('id')
+        ).order_by('-orders')[:5]
+
+        # Calculate sales by category
+        category_sales = OrderItem.objects.filter(order__in=queryset).values(
+            'dish__category__name'
+        ).annotate(
+            value=Sum(F('quantity') * F('dish__price'))
+        ).order_by('-value')
+
+        # Calculate total orders
+        total_orders = queryset.count()
+
+        # Calculate average order value
+        avg_order_value = queryset.aggregate(avg_value=Avg('total_amount'))['avg_value'] or 0
 
         return Response({
             'daily_sales': daily_sales,
             'total_income': total_income,
             'new_customers': new_customers,
+            'top_dishes': top_dishes,
+            'category_sales': category_sales,
+            'total_orders': total_orders,
+            'avg_order_value': avg_order_value,
         })
+
+    @action(detail=False, methods=['get'])
+    def sales_trends(self, request):
+        time_range = request.query_params.get('time_range', 'month')
+        current_queryset = self.get_queryset_by_time_range(time_range)
+        
+        # Calculate the previous time range
+        end_date = timezone.now() - timedelta(days=1)  # Exclude today for fair comparison
+        if time_range == 'day':
+            start_date = end_date - timedelta(days=1)
+            prev_start_date = start_date - timedelta(days=1)
+        elif time_range == 'week':
+            start_date = end_date - timedelta(weeks=1)
+            prev_start_date = start_date - timedelta(weeks=1)
+        elif time_range == 'month':
+            start_date = end_date - timedelta(days=30)
+            prev_start_date = start_date - timedelta(days=30)
+        elif time_range == 'year':
+            start_date = end_date - timedelta(days=365)
+            prev_start_date = start_date - timedelta(days=365)
+        
+        prev_queryset = self.queryset.filter(created_at__range=(prev_start_date, start_date))
+
+        current_stats = current_queryset.aggregate(
+            total_income=Sum('total_amount'),
+            total_orders=Count('id'),
+            avg_order_value=Avg('total_amount')
+        )
+        
+        prev_stats = prev_queryset.aggregate(
+            total_income=Sum('total_amount'),
+            total_orders=Count('id'),
+            avg_order_value=Avg('total_amount')
+        )
+
+        def calculate_trend(current, previous):
+            if previous and previous != 0:
+                return ((current - previous) / previous) * 100
+            return 0
+
+        trends = {
+            'total_income_trend': calculate_trend(
+                current_stats['total_income'] or 0,
+                prev_stats['total_income'] or 0
+            ),
+            'total_orders_trend': calculate_trend(
+                current_stats['total_orders'] or 0,
+                prev_stats['total_orders'] or 0
+            ),
+            'avg_order_value_trend': calculate_trend(
+                current_stats['avg_order_value'] or 0,
+                prev_stats['avg_order_value'] or 0
+            ),
+        }
+
+        return Response(trends)
 
 
 class BillViewSet(viewsets.ModelViewSet):
@@ -80,3 +172,9 @@ class NotificationViewSet(viewsets.ModelViewSet):
         notification.is_read = True
         notification.save()
         return Response({'status': 'notification marked as read'})
+    
+    @action(detail=False, methods=['get'])
+    def unread(self, request):
+        unread_notifications = self.queryset.filter(is_read=False)
+        serializer = self.get_serializer(unread_notifications, many=True)
+        return Response(serializer.data)

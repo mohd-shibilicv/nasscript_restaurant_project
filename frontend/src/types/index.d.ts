@@ -68,16 +68,40 @@ export interface OrderFormData {
 }
 
 // Analytics types
+
+export interface AnalyticsData {
+  daily_sales: DailySales[];
+  total_income: number;
+  new_customers: number;
+}
+
 export interface DailySales {
   date: string;
   total_sales: number;
   order_count: number;
 }
 
-export interface AnalyticsData {
+export interface TopDish {
+  dish__name: string;
+  orders: number;
+}
+
+export interface CategorySales {
+  dish__category__name: string;
+  value: number;
+}
+
+export interface DashboardData {
   daily_sales: DailySales[];
   total_income: number;
   new_customers: number;
+  top_dishes: TopDish[];
+  category_sales: CategorySales[];
+  total_orders: number;
+  avg_order_value: number;
+  total_income_trend: number;
+  total_orders_trend: number;
+  avg_order_value_trend: number;
 }
 
 // Component prop types

@@ -51,7 +51,7 @@ const OrdersPage: React.FC = () => {
 
   return (
     <Layout>
-      <h1 className="text-3xl font-semibold mb-6">Your Orders</h1>
+      <h1 className="text-3xl font-bold mb-6">Your Orders</h1>
       {orders?.results.length ? (
         <>
           {orders.results.map((order: any) => (

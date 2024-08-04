@@ -11,6 +11,7 @@ const DishesPage = lazy(() => import("./pages/DishesPage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const BillsPage = lazy(() => import("./pages/BillsPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
+
 // const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 function App() {

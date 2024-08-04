@@ -5,7 +5,7 @@ import OrderItem from "../components/Orders/OrderItem";
 import { useDishes } from "../hooks/useDishes";
 import { useOrders } from "../hooks/useOrders";
 import { Dish, Category, OrderFormData } from "../types";
-import { getCategories } from "../services/api";
+import { fetchUnreadCount, getCategories } from "../services/api";
 import { useQuery } from "react-query";
 import { CircleCheckBig } from "lucide-react";
 
@@ -74,6 +74,11 @@ const DishesPage: React.FC = () => {
     setIsOrderVisible(false);
   };
 
+  const handleCloseBtnClick = () => {
+    fetchUnreadCount();
+    setShowSuccessModal(false);
+  }
+
   const filteredDishes = selectedCategory
     ? data.filter((dish) =>
         typeof dish.category === "number"
@@ -96,7 +101,7 @@ const DishesPage: React.FC = () => {
       <div className="flex flex-col lg:flex-row">
         <div className={`${isOrderVisible ? `lg:w-2/3` : `w-full`} pr-4`}>
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold">Choose Categories</h2>
+            <h2 className="text-3xl font-bold">Choose Categories</h2>
           </div>
           <div className="flex flex-wrap gap-2 mb-8">
             <button
@@ -178,7 +183,7 @@ const DishesPage: React.FC = () => {
             <p>Your order has been placed successfully!</p>
             <button
               className="mt-4 bg-red-500 text-white py-2 px-4 rounded-lg"
-              onClick={() => setShowSuccessModal(false)}
+              onClick={handleCloseBtnClick}
             >
               Close
             </button>

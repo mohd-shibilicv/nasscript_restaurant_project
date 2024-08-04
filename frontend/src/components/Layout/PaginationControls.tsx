@@ -1,3 +1,4 @@
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import React from "react";
 
 interface PaginationControlsProps {
@@ -16,8 +17,9 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="bg-gray-300 px-4 py-2 rounded disabled:opacity-50"
+        className="flex gap-2 items-center bg-gray-300 px-4 py-2 rounded disabled:opacity-50"
       >
+        <ArrowLeft size={20} />
         Previous
       </button>
       <span>
@@ -26,9 +28,10 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="bg-gray-300 px-4 py-2 rounded disabled:opacity-50"
+        className="flex gap-2 items-center bg-gray-300 px-4 py-2 rounded disabled:opacity-50"
       >
         Next
+        <ArrowRight size={20} />
       </button>
     </div>
   );
