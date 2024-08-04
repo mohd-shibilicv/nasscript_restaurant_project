@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import Layout from "../components/Layout/Layout";
 import DishList from "../components/Dishes/DishList";
 import { useDishes } from "../hooks/useDishes";
-import { ChevronDown } from "lucide-react";
 import OrderItem from "../components/Orders/OrderItem";
-import { Dish } from "../types";
+import { Dish, Category } from "../types";
 import { getCategories } from "../services/api";
 import { useQuery } from "react-query";
 
@@ -18,6 +17,8 @@ const DishesPage: React.FC = () => {
 
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [isOrderVisible, setIsOrderVisible] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
   const data = dishes?.results ? dishes.results : [];
 
   const handleAddDish = (dish: Dish) => {
@@ -35,6 +36,14 @@ const DishesPage: React.FC = () => {
     setIsOrderVisible(true);
   };
 
+  const filteredDishes = selectedCategory
+    ? data.filter((dish) => 
+        typeof dish.category === "number"
+          ? dish.category === selectedCategory
+          : dish.category.id === selectedCategory
+      )
+    : data;
+
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading dishes</div>;
 
@@ -50,27 +59,35 @@ const DishesPage: React.FC = () => {
         <div className={`${isOrderVisible ? `lg:w-2/3` : `w-full`} pr-4`}>
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Choose Categories</h2>
-            <button className="text-blue-600 flex items-center">
+            <button className="text-black flex items-center">
               View all
-              <ChevronDown size={20} className="ml-1" />
+              {/* <ChevronDown size={20} className="ml-1" /> */}
             </button>
           </div>
           <div className="flex flex-wrap gap-2 mb-8">
-            <button className="bg-red-100 text-red-500 px-4 py-2 rounded-full">
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className={`px-4 py-2 rounded-lg shadow-md ${
+                selectedCategory === null ? "bg-red-100 text-red-500" : "bg-white"
+              }`}
+            >
               All items
             </button>
-            {isLoadingCategories ? ("Loading...") : ("")}
-            {isErrorCategories ? ("Error loading categories") : ("")}
-            {categories?.map((category, index) => (
+            {categories?.map((category: Category, index) => (
               <button
                 key={index}
-                className="bg-white px-4 py-2 rounded-full"
+                onClick={() => setSelectedCategory(category.id)}
+                className={`px-4 py-2 rounded-lg shadow-md ${
+                  selectedCategory === category.id
+                    ? "bg-red-100 text-red-500"
+                    : "bg-white"
+                }`}
               >
                 {category.name}
               </button>
             ))}
           </div>
-          <DishList dishes={data} onAddDish={handleAddDish} />
+          <DishList dishes={filteredDishes} onAddDish={handleAddDish} />
         </div>
         {orderItems.length > 0 && (
           <div

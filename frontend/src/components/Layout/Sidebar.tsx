@@ -1,7 +1,6 @@
 import {
   LayoutDashboard,
   Sandwich,
-  ShoppingCart,
   SlidersVertical,
 } from "lucide-react";
 import React from "react";
@@ -17,7 +16,7 @@ const Sidebar: React.FC = () => {
   return (
     <div className="w-full md:w-64 bg-white p-4 h-screen border-r border-gray-500">
       <Link to="/">
-        <div className="text-red-500 text-2xl font-bold mb-8">Logo</div>
+        <div className="text-red-500 text-2xl font-bold mb-8">LOGO</div>
       </Link>
       <nav>
         <ul className="space-y-2">
@@ -133,13 +132,13 @@ const Sidebar: React.FC = () => {
           </Link>
         </ul>
       </div>
-      <a href="https://nasscript.com" target="_blank" className="absolute bottom-0 left-20 flex items-center">
+      <a href="https://nasscript.com" target="_blank" className="absolute bottom-0 left-20 flex flex-col items-center">
         <p className="text-gray-600 text-sm">Powered by</p>
         <img
         src="/images/nasscript_company_logo.jpg"
         alt="logo"
-        width={32}
-        height={32}
+        width={42}
+        height={42}
       />
       </a>
     </div>
