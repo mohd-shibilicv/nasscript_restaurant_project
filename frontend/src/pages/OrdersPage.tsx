@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { lazy, useState } from "react";
 import Layout from "../components/Layout/Layout";
-import { useOrders, usePaginatedOrders } from "../hooks/useOrders";
-import { Order, Dish } from "../types";
+import { usePaginatedOrders } from "../hooks/useOrders";
+import { Order } from "../types";
 import { useDishes } from "../hooks/useDishes"; // Assume this hook fetches all dishes
-import OrderCard from "../components/Orders/OrderCard";
-import PaginationControls from "../components/Layout/PaginationControls";
+const OrderCard = lazy(() => import('../components/Orders/OrderCard'))
+const PaginationControls = lazy(() => import('../components/Layout/PaginationControls'))
 
 const OrderStatus: React.FC<{ status: Order["status"] }> = ({ status }) => {
   const statusConfig = {

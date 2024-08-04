@@ -1,8 +1,4 @@
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 
 class Category(models.Model):
@@ -94,20 +90,3 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.message[:50]}..."
-
-
-@receiver(post_save, sender=Order)
-def order_created(sender, instance, created, **kwargs):
-    if created:
-        Notification.objects.create(
-            user=instance.user,
-            message=f"New order #{instance.id} has been created."
-        )
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"user_{instance.user.id}", 
-            {
-                "type": "order.notification",
-                "message": f"New order #{instance.id} has been created."
-            }
-        )

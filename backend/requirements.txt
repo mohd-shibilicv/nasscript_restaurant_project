@@ -4,4 +4,3 @@ django-cors-headers
 environs
 django-filter
 Pillow
-channels

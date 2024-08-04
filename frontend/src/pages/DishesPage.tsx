@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout/Layout";
 import DishList from "../components/Dishes/DishList";
+import OrderItem from "../components/Orders/OrderItem";
 import { useDishes } from "../hooks/useDishes";
 import { useOrders } from "../hooks/useOrders";
-import OrderItem from "../components/Orders/OrderItem";
 import { Dish, Category, OrderFormData } from "../types";
 import { getCategories } from "../services/api";
 import { useQuery } from "react-query";
