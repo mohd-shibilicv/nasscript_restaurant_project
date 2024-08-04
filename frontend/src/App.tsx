@@ -21,7 +21,7 @@ function App() {
             <Route path="/dishes" element={<DishesPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/bills" element={<BillsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            {/* <Route path="/settings" element={<SettingsPage />} /> */}
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="*" element={<NotFound404 />} />
           </Routes>

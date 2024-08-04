@@ -10,14 +10,13 @@ export interface Dish {
   id: number;
   name: string;
   description: string;
-  image: string;
   price: number;
+  image: string;
   category: number | Category;
 }
 
 export interface OrderItem {
-  id?: number;
-  dish: number | Dish;
+  dish: number;
   quantity: number;
 }
 
@@ -25,8 +24,17 @@ export interface Order {
   id: number;
   created_at: string;
   total_amount: number;
-  status: "pending" | "approved" | "shipped" | "delivered";
+  status: "pending" | "approved" | "cancelled" | "delivered";
+  bill_generated: boolean;
   items: OrderItem[];
+}
+
+export interface Bill {
+  id: number;
+  order: number;
+  total_amount: number;
+  paid: boolean;
+  billed_at: string;
 }
 
 export interface Notification {
@@ -54,10 +62,9 @@ export interface DishFormData {
 }
 
 export interface OrderFormData {
-  items: {
-    dish: number;
-    quantity: number;
-  }[];
+  items: OrderItem[];
+  total_amount: number;
+  status: "pending" | "approved" | "cancelled" | "delivered";
 }
 
 // Analytics types
@@ -94,6 +101,9 @@ export interface DishListProps {
 
 export interface OrderItemProps {
   orderItem: OrderItem;
+  incrementQuantity: (id: number) => void;
+  decrementQuantity: (id: number) => void;
+  removeItem: (id: number) => void;
 }
 
 export interface OrderListProps {
@@ -102,7 +112,7 @@ export interface OrderListProps {
 
 // Hook return types
 export interface UseCategoriesReturn {
-  dishes: ApiResponse<Category> | undefined;
+  categories: ApiResponse<Category> | undefined;
   isLoading: boolean;
   isError: boolean;
   refetch: () => void;
@@ -113,7 +123,7 @@ export interface UseDishesReturn {
   isLoading: boolean;
   isError: boolean;
   refetch: () => void;
-  addDishToOrder: (id, quantity) => void;
+  addDishToOrder: (id: number, quantity: number) => void;
 }
 
 export interface UseOrdersReturn {
@@ -160,7 +170,7 @@ export type ActionType =
   | { type: "MARK_NOTIFICATION_READ"; payload: number };
 
 // Utility types
-export type STATUS_TYPE = "pending" | "approved" | "shipped" | "delivered";
+export type STATUS_TYPE = "pending" | "approved" | "cancelled" | "delivered";
 
 export interface PaginationProps {
   currentPage: number;

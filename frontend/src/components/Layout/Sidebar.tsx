@@ -10,11 +10,11 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
 
   const isActive = (path: string) => {
-    return location.pathname === path ? "bg-yellow-400" : "hover:bg-gray-100";
+    return location.pathname === path ? "bg-red-500 text-white" : "hover:bg-gray-100";
   };
 
   return (
-    <div className="w-full md:w-64 bg-white p-4 h-screen border-r border-gray-500">
+    <div className="w-full md:w-64 bg-white p-4 h-screen border-r border-gray-300">
       <Link to="/">
         <div className="text-red-500 text-2xl font-bold mb-8">LOGO</div>
       </Link>

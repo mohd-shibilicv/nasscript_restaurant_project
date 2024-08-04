@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django_filters',
+    'channels',
     'restaurant_app.apps.RestaurantAppConfig',
 ]
 
@@ -88,6 +89,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'restaurant_project.wsgi.application'
 
+ASGI_APPLICATION = 'restaurant_project.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -99,6 +101,14 @@ DATABASES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

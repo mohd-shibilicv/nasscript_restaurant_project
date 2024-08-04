@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { getOrders, createOrder } from '../services/api';
+import { getOrders, createOrder, fetchOrders } from '../services/api';
 import { UseOrdersReturn, OrderFormData } from '../types';
 
 export const useOrders = (): UseOrdersReturn => {
@@ -20,4 +20,10 @@ export const useOrders = (): UseOrdersReturn => {
     createOrder: createOrderMutation.mutate,
     refetch,
   };
+};
+
+export const usePaginatedOrders = (page: number) => {
+  return useQuery(['orders', page], () => fetchOrders(page), {
+    keepPreviousData: true,
+  });
 };
