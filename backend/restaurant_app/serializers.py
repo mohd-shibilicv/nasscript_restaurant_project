@@ -15,6 +15,8 @@ class DishSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    dish = serializers.PrimaryKeyRelatedField(queryset=Dish.objects.all())
+
     class Meta:
         model = OrderItem
         fields = ['dish', 'quantity']
@@ -25,7 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'created_at', 'total_amount', 'status', 'items']
+        fields = ['id', 'created_at', 'total_amount', 'status', 'bill_generated', 'items']
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
