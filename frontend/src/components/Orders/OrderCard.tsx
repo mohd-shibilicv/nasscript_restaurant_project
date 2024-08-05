@@ -22,6 +22,11 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, dishes }) => {
     updateOrderStatus({ orderId: order.id, status: newStatus});
   };
 
+  // TODO: Generate order pdf, and send it to the customer provided phone number
+  // raise a modal asking for a phone number,
+  // then download the pdf and sent it to customer phone number
+  // then generate the bill
+
   const handleGenerateBill = () => {
     generateBill({ orderId: order.id, totalAmount: order.total_amount });
     navigate("/bills")

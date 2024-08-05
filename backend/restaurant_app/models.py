@@ -54,7 +54,7 @@ class Order(models.Model):
         ("cancelled", "Cancelled"),
         ("delivered", "Delivered"),
     ]
-
+    customer = models.ForeignKey(Customer, related_name='orders', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=8, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -78,6 +78,7 @@ class OrderItem(models.Model):
 
 class Bill(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='bills')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='bills')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     paid = models.BooleanField(default=False)
     billed_at = models.DateTimeField(auto_now_add=True)
@@ -89,7 +90,8 @@ class Bill(models.Model):
         return f"Bill for order {self.order.id}"
     
     def save(self, *args, **kwargs):
-        if not self.pk:  # Only update the order if the bill is being created, not updated
+        if not self.pk:
+            self.customer = self.order.customer
             self.order.bill_generated = True
             self.paid = True
             self.order.save()
@@ -97,6 +99,7 @@ class Bill(models.Model):
 
 
 class Notification(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)

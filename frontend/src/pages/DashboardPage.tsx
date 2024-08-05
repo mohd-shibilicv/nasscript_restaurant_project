@@ -111,8 +111,8 @@ const RestaurantDashboard: React.FC = () => {
           />
           <DashboardCard
             title="Peak Hour"
-            value={formatHour(popularTimeSlots[0].hour)}
-            icon={<ClockIcon className="h-2 w-2 text-muted-foreground" />}
+            value={formatHour(popularTimeSlots[0]?.hour)}
+            icon={<ClockIcon className="h-4 w-4 text-muted-foreground" />}
           />
           <DashboardCard
             title="Total Orders"

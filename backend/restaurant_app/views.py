@@ -72,6 +72,12 @@ class DishViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
     def get_queryset_by_time_range(self, time_range):
         end_date = timezone.now()
@@ -215,11 +221,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 class BillViewSet(viewsets.ModelViewSet):
     queryset = Bill.objects.all()
     serializer_class = BillSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all().order_by("-created_at")
     serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=True, methods=["post"])
     def mark_as_read(self, request, pk=None):

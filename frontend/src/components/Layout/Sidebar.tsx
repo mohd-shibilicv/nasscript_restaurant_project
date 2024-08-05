@@ -7,12 +7,15 @@ import {
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import NotificationBadge from "./NotificationBadge";
+import LogoutBtn from "./LogoutBtn";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
 
   const isActive = (path: string) => {
-    return location.pathname === path ? "bg-red-500 text-white" : "hover:bg-gray-100";
+    return location.pathname === path
+      ? "bg-red-500 text-white"
+      : "hover:bg-gray-100";
   };
 
   return (
@@ -93,7 +96,7 @@ const Sidebar: React.FC = () => {
             </li>
           </Link>
           <Link
-            to="/settings"
+            to="/"
             className={`flex items-center space-x-2 p-2 rounded ${isActive(
               "/settings"
             )}`}
@@ -120,16 +123,21 @@ const Sidebar: React.FC = () => {
               <NotificationBadge className="ml-auto" />
             </li>
           </Link>
+            <LogoutBtn />
         </ul>
       </div>
-      <a href="https://nasscript.com" target="_blank" className="absolute bottom-0 left-20 flex flex-col items-center">
+      <a
+        href="https://nasscript.com"
+        target="_blank"
+        className="absolute bottom-0 left-20 flex flex-col items-center"
+      >
         <p className="text-gray-600 text-sm">Powered by</p>
         <img
-        src="/images/nasscript_company_logo.jpg"
-        alt="logo"
-        width={42}
-        height={42}
-      />
+          src="/images/nasscript_company_logo.jpg"
+          alt="logo"
+          width={42}
+          height={42}
+        />
       </a>
     </div>
   );

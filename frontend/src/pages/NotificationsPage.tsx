@@ -61,35 +61,33 @@ const NotificationsPage: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {notifications.map((notification) => (
-              <>
-                <div
-                  key={notification.id}
-                  className="flex justify-between items-center bg-white shadow-md rounded-lg p-4"
-                >
-                  <div>
-                    <p className="text-sm text-gray-800">
-                      {notification.message}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(notification.created_at).toLocaleString()}
-                    </p>
-                    {!notification.is_read && (
-                      <button
-                        onClick={() => markAsRead(notification.id)}
-                        className="mt-2 text-xs text-blue-600 hover:text-blue-800"
-                      >
-                        Mark as read
-                      </button>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handleDeleteNotification(notification.id)}
-                    className="hover:text-red-500 cursor-pointer"
-                  >
-                    <X />
-                  </button>
+              <div
+                key={notification.id}
+                className="flex justify-between items-center bg-white shadow-md rounded-lg p-4"
+              >
+                <div>
+                  <p className="text-sm text-gray-800">
+                    {notification.message}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {new Date(notification.created_at).toLocaleString()}
+                  </p>
+                  {!notification.is_read && (
+                    <button
+                      onClick={() => markAsRead(notification.id)}
+                      className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      Mark as read
+                    </button>
+                  )}
                 </div>
-              </>
+                <button
+                  onClick={() => handleDeleteNotification(notification.id)}
+                  className="hover:text-red-500 cursor-pointer"
+                >
+                  <X />
+                </button>
+              </div>
             ))}
           </div>
         )}
