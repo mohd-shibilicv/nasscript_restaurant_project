@@ -83,6 +83,7 @@ export interface DailySales {
 
 export interface TopDish {
   dish__name: string;
+  dish__image: string;
   orders: number;
 }
 
@@ -91,10 +92,15 @@ export interface CategorySales {
   value: number;
 }
 
+export interface TimeSlot {
+  hour: Date;
+  order: number;
+}
+
 export interface DashboardData {
   daily_sales: DailySales[];
   total_income: number;
-  new_customers: number;
+  popular_time_slots: { hour: any };
   top_dishes: TopDish[];
   category_sales: CategorySales[];
   total_orders: number;

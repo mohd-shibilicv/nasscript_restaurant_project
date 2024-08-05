@@ -78,7 +78,6 @@ export const fetchDashboardData = async (timeRange: string): Promise<DashboardDa
   
   const dashboardData = dashboardResponse.data;
   const trendsData = trendsResponse.data;
-  console.log(trendsData);
   
   return { ...dashboardData, ...trendsData };
 };

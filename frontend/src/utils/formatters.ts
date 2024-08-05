@@ -5,6 +5,11 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
+export const formatHour = (dateString: any) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString([], { hour: "2-digit", hour12: true });
+};
+
 export const formatDate = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
