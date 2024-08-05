@@ -19,7 +19,7 @@ This project is a full-stack Restaurant Management Application developed by Nass
   - Sales by category
   - Popular time slots
 
-<iframe width="560" height="315" src="documentation/videos/Overview.mp4" frameborder="0" allowfullscreen></iframe>
+[Watch the video](documentation/videos/Overview.mp4)
 
 ## Tech Stack
 
