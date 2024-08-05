@@ -30,19 +30,27 @@ import {
   TrendingUpIcon,
   DollarSignIcon,
   ShoppingCartIcon,
-  UserIcon,
+  ClockIcon,
 } from "lucide-react";
 import Loader from "@/components/Layout/Loader";
 import Layout from "@/components/Layout/Layout";
+import TopDishesSlider from "@/components/Dashboard/TopDishesSlider";
+import { formatHour } from "@/utils/formatters";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884D8",
+  "#0088AA",
+];
 
 const RestaurantDashboard: React.FC = () => {
   const [timeRange, setTimeRange] = useState<string>("week");
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null
   );
-  console.log(dashboardData);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -56,20 +64,19 @@ const RestaurantDashboard: React.FC = () => {
 
   const totalIncome = dashboardData.total_income ?? 0;
 
-  const newCustomers = dashboardData.new_customers ?? 0;
+  const popularTimeSlots = dashboardData.popular_time_slots ?? 0;
   const totalOrders = dashboardData.total_orders ?? 0;
   const avgOrderValue = dashboardData.avg_order_value ?? 0;
   const dailySales = dashboardData.daily_sales ?? [];
   const topDishes = dashboardData.top_dishes ?? [];
   const categorySales = dashboardData.category_sales ?? [];
+  console.log(popularTimeSlots);
 
   return (
     <Layout>
       <div className="p-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold mb-4">
-            Dashboard
-          </h1>
+          <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
 
           <div className="mb-4">
             <Select onValueChange={setTimeRange} defaultValue={timeRange}>
@@ -94,10 +101,9 @@ const RestaurantDashboard: React.FC = () => {
             trend={dashboardData.total_income_trend}
           />
           <DashboardCard
-            title="New Customers"
-            value={newCustomers}
-            icon={<UserIcon className="h-4 w-4 text-muted-foreground" />}
-            trend={dashboardData.new_customers}
+            title="Peak Hour"
+            value={formatHour(popularTimeSlots.hour)}
+            icon={<ClockIcon className="h-2 w-2 text-muted-foreground" />}
           />
           <DashboardCard
             title="Total Orders"
@@ -193,11 +199,14 @@ const RestaurantDashboard: React.FC = () => {
                     />
                   ))}
                 </Pie>
+                <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
+      <h1 className="text-3xl font-bold mt-5">Main Dishes</h1>
+      <TopDishesSlider topDishes={topDishes} />
     </Layout>
   );
 };
