@@ -78,8 +78,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             queryset.annotate(hour=TruncHour("created_at"))
             .values("hour")
             .annotate(order_count=Count("id"))
-            .order_by("-order_count")
-            .values("hour")[:5]
+            .order_by("-order_count")[:5]
         )
 
         # Calculate top dishes
@@ -113,7 +112,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             {
                 "daily_sales": daily_sales,
                 "total_income": total_income,
-                "popular_time_slots": popular_time_slots[0],
+                "popular_time_slots": popular_time_slots,
                 "top_dishes": top_dishes,
                 "category_sales": category_sales,
                 "total_orders": total_orders,

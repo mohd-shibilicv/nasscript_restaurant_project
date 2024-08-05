@@ -93,14 +93,15 @@ export interface CategorySales {
 }
 
 export interface TimeSlot {
-  hour: Date;
-  order: number;
+  hour: string;
+  order_count: number;
+  formattedHour: string;
 }
 
 export interface DashboardData {
   daily_sales: DailySales[];
   total_income: number;
-  popular_time_slots: { hour: any };
+  popular_time_slots: TimeSlot[];
   top_dishes: TopDish[];
   category_sales: CategorySales[];
   total_orders: number;

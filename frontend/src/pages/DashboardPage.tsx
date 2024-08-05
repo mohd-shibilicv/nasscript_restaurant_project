@@ -14,6 +14,11 @@ import {
   PieChart,
   Pie,
   Cell,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from "recharts";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
@@ -70,7 +75,11 @@ const RestaurantDashboard: React.FC = () => {
   const dailySales = dashboardData.daily_sales ?? [];
   const topDishes = dashboardData.top_dishes ?? [];
   const categorySales = dashboardData.category_sales ?? [];
-  console.log(popularTimeSlots);
+
+  const formattedPopularTimeSlots = popularTimeSlots.map((slot) => ({
+    ...slot,
+    formattedHour: formatHour(slot.hour),
+  }));
 
   return (
     <Layout>
@@ -102,7 +111,7 @@ const RestaurantDashboard: React.FC = () => {
           />
           <DashboardCard
             title="Peak Hour"
-            value={formatHour(popularTimeSlots.hour)}
+            value={formatHour(popularTimeSlots[0].hour)}
             icon={<ClockIcon className="h-2 w-2 text-muted-foreground" />}
           />
           <DashboardCard
@@ -173,37 +182,58 @@ const RestaurantDashboard: React.FC = () => {
           </Card>
         </div>
 
-        <Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <Card>
+            <CardHeader>
+              <h3 className="text-lg font-semibold">Sales by Category</h3>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={categorySales}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ dish__category__name, percent }) =>
+                      `${dish__category__name} ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {categorySales.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold">Sales by Category</h3>
+            <h3 className="text-lg font-semibold">Popular Time Slots</h3>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categorySales}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ dish__category__name, percent }) =>
-                    `${dish__category__name} ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {categorySales.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
+              <RadarChart outerRadius={90} data={formattedPopularTimeSlots}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="formattedHour" />
+                <PolarRadiusAxis angle={30} domain={[0, 'auto']} />
+                <Radar name="Order Count" dataKey="order_count" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
                 <Tooltip />
-              </PieChart>
+                <Legend />
+              </RadarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
+
+        </div>
       </div>
       <h1 className="text-3xl font-bold mt-5">Main Dishes</h1>
       <TopDishesSlider topDishes={topDishes} />
