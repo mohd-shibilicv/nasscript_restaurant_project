@@ -1,9 +1,11 @@
 from datetime import timedelta
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework_simplejwt.tokens import TokenError, RefreshToken
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from django.db.models import Sum, Count, Avg, F
 from django.db.models.functions import TruncDate, TruncHour
 from restaurant_app.models import Category, Dish, Order, OrderItem, Notification, Bill
@@ -13,7 +15,38 @@ from restaurant_app.serializers import (
     OrderSerializer,
     NotificationSerializer,
     BillSerializer,
+    UserSerializer
 )
+
+
+User = get_user_model()
+
+
+class UserRegisterViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class LogoutView(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['post'])
+    def logout(self, request):
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except TokenError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

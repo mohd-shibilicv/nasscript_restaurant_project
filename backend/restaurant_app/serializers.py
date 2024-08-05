@@ -1,5 +1,21 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 from restaurant_app.models import Category, Dish, Order, OrderItem, Notification, Bill
+
+
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'mobile_number', 'password']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
 
 
 class CategorySerializer(serializers.ModelSerializer):
