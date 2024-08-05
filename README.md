@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a full-stack Restaurant Management Application developed by Nasscript. It provides a comprehensive solution for managing restaurant operations, including dish management, order processing, billing, and analytics.
+This project is a full-stack Restaurant Management Application. It provides a comprehensive solution for managing restaurant operations, including dish management, order processing, billing, and analytics.
 
 ## Features
 
@@ -19,7 +19,7 @@ This project is a full-stack Restaurant Management Application developed by Nass
   - Sales by category
   - Popular time slots
 
-[Watch the video](documentation/videos/Overview.mp4)
+[Watch the video](https://youtu.be/gqNXrVhi3Cc?si=H1VP3prAGtIflpWi)
 
 ## Tech Stack
 
@@ -110,7 +110,6 @@ The frontend will be available at `http://localhost:5173`.
 Here's a brief guide on how to use the application:
 
 1. Access the frontend at `http://localhost:5173`
-2. Log in or create an account
 3. Explore the various features:
    - Manage dishes and categories
    - Create and process orders
@@ -130,15 +129,3 @@ Orders
 ## API Documentation
 
 The API endpoints are available at `http://127.0.0.1:8000/api/`.
-
-## Contributing
-
-We welcome contributions to improve the Restaurant Management Application. Please follow these steps:
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Thank you world for the support!
