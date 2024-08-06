@@ -85,7 +85,7 @@ const Sidebar: React.FC = () => {
         href="https://nasscript.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-4 flex flex-col items-center"
+        className="mt-4 flex justify-center items-center"
       >
         <p className="text-gray-600 text-xs md:text-sm">Powered by</p>
         <img
