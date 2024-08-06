@@ -6,6 +6,9 @@ from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import TokenError, RefreshToken
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from restaurant_app.utils import generate_order_pdf, send_sms, shorten_url
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db.models import Sum, Count, Avg, F
 from django.db.models.functions import TruncDate, TruncHour
 from restaurant_app.models import Category, Dish, Order, OrderItem, Notification, Bill
@@ -15,7 +18,7 @@ from restaurant_app.serializers import (
     OrderSerializer,
     NotificationSerializer,
     BillSerializer,
-    UserSerializer
+    UserSerializer,
 )
 
 
@@ -32,16 +35,18 @@ class UserRegisterViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
 
 class LogoutView(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     def logout(self, request):
         try:
-            refresh_token = request.data['refresh_token']
+            refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)
@@ -76,8 +81,43 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request
+        context["request"] = self.request
         return context
+
+    @action(detail=True, methods=["post"])
+    def generate_and_send_pdf(self, request, pk=None):
+        order = self.get_object()
+        phone_number = request.data.get("phone_number")
+
+        if not phone_number:
+            return Response(
+                {"error": "Phone number is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Generate PDF
+        pdf_buffer = generate_order_pdf(order)
+        customer_phone_number = f"whatsapp:+91{phone_number}"
+
+        # Save PDF to storage
+        pdf_file = ContentFile(pdf_buffer.getvalue())
+        pdf_path = default_storage.save(f"orders/order_{order.id}.pdf", pdf_file)
+
+        # Get the URL of the saved PDF
+        scheme = request.scheme
+        host = request.get_host()
+        pdf_url = default_storage.url(pdf_path)
+        full_path_url = f"{scheme}://{host}/{pdf_url}"
+        short_url = shorten_url(full_path_url)
+
+        # Send SMS with PDF link
+        message = f"Thanl you for your purchase.\n\nYour order details: {short_url}"
+        send_sms(customer_phone_number, message)
+
+        return Response(
+            {"message": "PDF generated and sent successfully"},
+            status=status.HTTP_200_OK,
+        )
 
     def get_queryset_by_time_range(self, time_range):
         end_date = timezone.now()
