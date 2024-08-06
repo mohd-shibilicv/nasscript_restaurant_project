@@ -38,13 +38,16 @@ api.interceptors.request.use((config) => {
 });
 
 export const login = (credentials: any) => api.post("/token/", credentials);
-export const register = (userData: any) => api.post("/register/", userData);
+
+export const register = (userData: any) =>
+  api.post("/register/", userData)
+
 export const logout = (refresh_token: any) =>
   api.post("/logout/", refresh_token);
 
 export const getCategories = () =>
   api
-    .get<ApiResponse<Category>>("/categories")
+    .get<ApiResponse<Category>>("/categories/")
     .then((response) => response.data.results);
 export const getDishes = () =>
   api.get<ApiResponse<Dish>>("/dishes/").then((response) => response.data);
