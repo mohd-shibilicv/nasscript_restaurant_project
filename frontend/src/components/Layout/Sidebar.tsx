@@ -1,11 +1,14 @@
+import React from "react";
+import { useLocation, Link } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Bell,
   LayoutDashboard,
   Sandwich,
   SlidersVertical,
+  FileText,
+  Receipt
 } from "lucide-react";
-import React from "react";
-import { useLocation, Link } from "react-router-dom";
 import NotificationBadge from "./NotificationBadge";
 import LogoutBtn from "./LogoutBtn";
 
@@ -18,125 +21,77 @@ const Sidebar: React.FC = () => {
       : "hover:bg-gray-100";
   };
 
+  const menuItems = [
+    { path: "/", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/dishes", icon: Sandwich, label: "Dishes" },
+    { path: "/orders", icon: FileText, label: "Orders" },
+    { path: "/bills", icon: Receipt, label: "Bills" },
+    { path: "/settings", icon: SlidersVertical, label: "Settings" },
+  ];
+
+  const renderMenuItem = (item: { path: string; icon: React.ElementType; label: string }) => (
+    <TooltipProvider key={item.path}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            to={item.path}
+            className={`flex items-center space-x-2 p-2 rounded ${isActive(item.path)}`}
+          >
+            <item.icon className="w-6 h-6" />
+            <span className="hidden md:inline">{item.label}</span>
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="md:hidden">
+          <p>{item.label}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
   return (
-    <div className="w-full md:w-64 bg-white p-4 h-screen border-r border-gray-300">
-      <Link to="/">
-        <div className="text-red-500 text-2xl font-bold mb-8">LOGO</div>
+    <div className="w-20 md:w-64 bg-white p-4 h-screen border-r border-gray-300 flex flex-col">
+      <Link to="/" className="mb-8 flex justify-center md:justify-start">
+        <div className="text-red-500 text-2xl font-bold">LOGO</div>
       </Link>
-      <nav>
+      <nav className="flex-grow">
         <ul className="space-y-2">
-          <Link
-            to="/"
-            className={`flex items-center space-x-2 p-2 rounded ${isActive(
-              "/"
-            )}`}
-          >
-            <li className="flex items-center space-x-2">
-              <LayoutDashboard />
-              <span>Dashboard</span>
-            </li>
-          </Link>
-          <Link
-            to="/dishes"
-            className={`flex items-center space-x-2 p-2 rounded ${isActive(
-              "/dishes"
-            )}`}
-          >
-            <li className="flex items-center space-x-2">
-              <Sandwich className="w-6 h-6" />
-              <span>Dishes</span>
-            </li>
-          </Link>
-          <Link
-            to="/orders"
-            className={`flex items-center space-x-2 p-2 rounded ${isActive(
-              "/orders"
-            )}`}
-          >
-            <li className="flex items-center space-x-2">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                />
-              </svg>
-              <span>Orders</span>
-            </li>
-          </Link>
-          <Link
-            to="/bills"
-            className={`flex items-center space-x-2 p-2 rounded ${isActive(
-              "/bills"
-            )}`}
-          >
-            <li className="flex items-center space-x-2">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-              </svg>
-              <span>Bills</span>
-            </li>
-          </Link>
-          <Link
-            to="/"
-            className={`flex items-center space-x-2 p-2 rounded ${isActive(
-              "/settings"
-            )}`}
-          >
-            <li className="flex items-center space-x-2">
-              <SlidersVertical />
-              <span>Settings</span>
-            </li>
-          </Link>
+          {menuItems.map(renderMenuItem)}
         </ul>
       </nav>
       <div className="mt-8">
-        <h3 className="text-sm font-semibold text-gray-500 mb-2">Other</h3>
+        <h3 className="text-sm font-semibold text-gray-500 mb-2 hidden md:block">Other</h3>
         <ul>
-          <Link
-            to="/notifications"
-            className={`flex items-center space-x-2 p-2 rounded ${isActive(
-              "/notifications"
-            )}`}
-          >
-            <li className="flex items-center space-x-2">
-              <Bell className="w-6 h-6" />
-              <span>Notifications</span>
-              <NotificationBadge className="ml-auto" />
-            </li>
-          </Link>
-            <LogoutBtn />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/notifications"
+                  className={`flex items-center space-x-2 p-2 rounded ${isActive("/notifications")}`}
+                >
+                  <Bell className="w-6 h-6" />
+                  <span className="hidden md:inline">Notifications</span>
+                  <NotificationBadge className="ml-auto" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="md:hidden">
+                <p>Notifications</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <LogoutBtn />
         </ul>
       </div>
       <a
         href="https://nasscript.com"
         target="_blank"
-        className="absolute bottom-0 left-20 flex flex-col items-center"
+        rel="noopener noreferrer"
+        className="mt-4 flex flex-col items-center"
       >
-        <p className="text-gray-600 text-sm">Powered by</p>
+        <p className="text-gray-600 text-xs md:text-sm">Powered by</p>
         <img
           src="/images/nasscript_company_logo.jpg"
           alt="logo"
-          width={42}
-          height={42}
+          className="w-8 h-8 md:w-10 md:h-10"
         />
       </a>
     </div>
