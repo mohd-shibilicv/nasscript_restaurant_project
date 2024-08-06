@@ -1,5 +1,6 @@
 venv/
 __pycache__/
+media/orders/*
 db.sqlite3
 *.env
 *.pyc
